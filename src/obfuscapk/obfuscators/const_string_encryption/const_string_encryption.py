@@ -5,7 +5,7 @@ import os
 import re
 from binascii import hexlify
 from typing import List, Set
-
+import random
 from Crypto.Cipher import AES
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Util.Padding import pad
@@ -21,7 +21,7 @@ class ConstStringEncryption(obfuscator_category.IEncryptionObfuscator):
             "{0}.{1}".format(__name__, self.__class__.__name__)
         )
         super().__init__()
-
+        random.seed(37)
         self.encryption_secret = "This-key-need-to-be-32-character"
 
     def encrypt_string(self, string_to_encrypt: str) -> str:
@@ -247,7 +247,7 @@ class ConstStringEncryption(obfuscator_category.IEncryptionObfuscator):
                         util.get_decrypt_string_smali_code(self.encryption_secret)
                     )
                     obfuscation_info.decrypt_string_smali_file_added_flag = True
-
+                #print(len(encrypted_strings))
         except Exception as e:
             self.logger.error(
                 'Error during execution of "{0}" obfuscator: {1}'.format(

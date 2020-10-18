@@ -2,7 +2,7 @@
 
 import logging
 from typing import List, Set
-
+import random
 from obfuscapk import obfuscator_category
 from obfuscapk import util
 from obfuscapk.obfuscation import Obfuscation
@@ -14,7 +14,7 @@ class FieldRename(obfuscator_category.IRenameObfuscator):
             "{0}.{1}".format(__name__, self.__class__.__name__)
         )
         super().__init__()
-
+        random.seed(15)
         self.is_adding_fields = True
 
         self.max_fields_to_add = 0
@@ -57,7 +57,7 @@ class FieldRename(obfuscator_category.IRenameObfuscator):
                     # Field declared in class.
                     field_match = util.field_pattern.match(line)
 
-                    if field_match:
+                    if field_match and random.random()>.5:
                         field_name = field_match.group("field_name")
                         # Avoid sub-fields.
                         if "$" not in field_name:
@@ -90,7 +90,7 @@ class FieldRename(obfuscator_category.IRenameObfuscator):
                             out_file.write(line)
                     else:
                         out_file.write(line)
-
+        print(len(renamed_fields))
         return renamed_fields
 
     def rename_field_references(

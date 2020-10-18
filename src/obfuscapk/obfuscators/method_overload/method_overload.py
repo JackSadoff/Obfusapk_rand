@@ -15,7 +15,7 @@ class MethodOverload(obfuscator_category.ICodeObfuscator):
             "{0}.{1}".format(__name__, self.__class__.__name__)
         )
         super().__init__()
-
+        random.seed(12)
         self.is_adding_methods = True
 
         self.param_types = ["Ljava/lang/String;", "Z", "B", "S", "C", "I", "F"]
@@ -136,7 +136,7 @@ class MethodOverload(obfuscator_category.ICodeObfuscator):
                         method_return=method_match.group("method_return"),
                     )
                     # Add method overload.
-                    if method not in methods_to_ignore:
+                    if method not in methods_to_ignore and random.random()>.5:
                         # Create random parameter lists to be added to the method
                         # signature. Add 3 overloads for each method and for each
                         # overload use 4 random params.

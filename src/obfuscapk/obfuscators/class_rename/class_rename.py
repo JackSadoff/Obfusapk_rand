@@ -3,6 +3,7 @@
 import logging
 import os
 import re
+import random
 import xml.etree.cElementTree as Xml
 from typing import List, Set, Dict, Union
 from xml.etree.cElementTree import Element
@@ -18,7 +19,10 @@ class ClassRename(obfuscator_category.IRenameObfuscator):
             "{0}.{1}".format(__name__, self.__class__.__name__)
         )
         super().__init__()
-
+        # Random
+        random.seed(5)
+        self.obfscClass=set()
+        self.clearClass=set()
         self.subclass_name_pattern = re.compile(
             r'\s+name\s=\s"(?P<subclass_name>\S+?)"', re.UNICODE
         )
@@ -89,7 +93,16 @@ class ClassRename(obfuscator_category.IRenameObfuscator):
                         class_match = util.class_pattern.match(line)
                         if class_match:
                             class_name = class_match.group("class_name")
-
+                            clsName=class_name
+                            if clsName not in self.obfscClass and clsName not in self.clearClass:
+                                    val=random.random()
+                                    if val > .1:
+                                        self.obfscClass.add(clsName)
+                                    else:
+                                        self.clearClass.add(clsName)
+                            if class_name in self.clearClass:
+                            #        print(class_name)
+                                    continue
                             # Split class name to its components and encrypt them.
                             class_tokens = self.split_class_pattern.split(
                                 class_name[1:-1]
@@ -158,7 +171,7 @@ class ClassRename(obfuscator_category.IRenameObfuscator):
                         out_file.write(line)
                     else:
                         out_file.write(line)
-
+        print(renamed_classes)
         return renamed_classes
 
     def rename_class_usages_in_smali(
@@ -226,6 +239,7 @@ class ClassRename(obfuscator_category.IRenameObfuscator):
         rename_transformations: dict,
         interactive: bool = False,
     ):
+        #print(xml_files)
         dot_rename_transformations = self.slash_to_dot_notation_for_classes(
             rename_transformations
         )
@@ -267,7 +281,6 @@ class ClassRename(obfuscator_category.IRenameObfuscator):
 
     def obfuscate(self, obfuscation_info: Obfuscation):
         self.logger.info('Running "{0}" obfuscator'.format(self.__class__.__name__))
-
         try:
             Xml.register_namespace(
                 "android", "http://schemas.android.com/apk/res/android"
@@ -298,11 +311,13 @@ class ClassRename(obfuscator_category.IRenameObfuscator):
                             # Every smali file contains a class.
                             class_match = util.class_pattern.match(line)
                             if class_match:
-                                self.class_name_to_smali_file[
-                                    class_match.group("class_name")
-                                ] = smali_file
+                                clsName=class_match.group("class_name")
+                                if clsName in self.obfscClass:
+                                        self.class_name_to_smali_file[
+                                                class_match.group("class_name")
+                                        ] = smali_file
                                 break
-
+            #print(clearClass)
             self.transform_package_name(manifest_root)
 
             # Write the changes into the manifest file.
@@ -350,7 +365,8 @@ class ClassRename(obfuscator_category.IRenameObfuscator):
                 class_rename_transformations,
                 obfuscation_info.interactive,
             )
-
+            print(len(self.clearClass))
+            print(len(self.obfscClass))
         except Exception as e:
             self.logger.error(
                 'Error during execution of "{0}" obfuscator: {1}'.format(
