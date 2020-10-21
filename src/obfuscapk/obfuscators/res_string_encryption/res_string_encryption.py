@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import random
 import logging
 import os
 import re
@@ -22,7 +22,7 @@ class ResStringEncryption(obfuscator_category.IEncryptionObfuscator):
             "{0}.{1}".format(__name__, self.__class__.__name__)
         )
         super().__init__()
-
+        random.seed(5)
         self.encryption_secret = "This-key-need-to-be-32-character"
 
     def encrypt_string(self, string_to_encrypt: str) -> str:
@@ -202,14 +202,14 @@ class ResStringEncryption(obfuscator_category.IEncryptionObfuscator):
                         continue
 
                     string_res_match = load_string_res_pattern.match(line)
-                    if string_res_match:
+                    if string_res_match and random.random() > 0.5:
                         string_index.append(line_number)
                         string_register.append(string_res_match.group("param_register"))
                         string_local_count.append(current_local_count)
                         continue
 
                     string_array_res_match = load_string_array_res_pattern.match(line)
-                    if string_array_res_match:
+                    if string_array_res_match and random.random() > 0.5:
                         string_array_index.append(line_number)
                         string_array_register.append(
                             string_array_res_match.group("param_register")

@@ -4,7 +4,7 @@ import logging
 import os
 import re
 from typing import List, Set
-
+import random
 from obfuscapk import obfuscator_category
 from obfuscapk import util
 from obfuscapk.obfuscation import Obfuscation
@@ -16,7 +16,7 @@ class AdvancedReflection(obfuscator_category.ICodeObfuscator):
             "{0}.{1}".format(__name__, self.__class__.__name__)
         )
         super().__init__()
-
+        random.seed(5)
         self.methods_with_reflection: int = 0
 
         # Keep track of the length of the added instructions for advanced reflection
@@ -386,7 +386,7 @@ class AdvancedReflection(obfuscator_category.ICodeObfuscator):
 
                     # If there are enough registers for reflection operations, look for
                     # method invocations inside each method's body.
-                    if method_is_reflectable[method_number]:
+                    if method_is_reflectable[method_number] and random.random() > 0.5:
                         current_line_number = index
                         while not lines[current_line_number].startswith(".end method"):
 

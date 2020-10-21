@@ -2,7 +2,7 @@
 
 import logging
 import re
-
+import random
 from obfuscapk import obfuscator_category
 from obfuscapk import util
 from obfuscapk.obfuscation import Obfuscation
@@ -14,7 +14,7 @@ class Nop(obfuscator_category.ICodeObfuscator):
             "{0}.{1}".format(__name__, self.__class__.__name__)
         )
         super().__init__()
-
+        random.seed(5)
     def obfuscate(self, obfuscation_info: Obfuscation):
         self.logger.info('Running "{0}" obfuscator'.format(self.__class__.__name__))
 
@@ -39,7 +39,7 @@ class Nop(obfuscator_category.ICodeObfuscator):
                         # Check if this line contains an op code at the beginning
                         # of the string.
                         match = pattern.match(line)
-                        if match:
+                        if match and random.random() > .8:
                             op_code = match.group("op_code")
                             # If this is a valid op code, insert some nop instructions
                             # after it.

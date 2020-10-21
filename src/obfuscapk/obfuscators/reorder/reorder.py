@@ -4,7 +4,7 @@ import logging
 import random
 import re
 from typing import List
-
+import random
 from obfuscapk import obfuscator_category
 from obfuscapk import util
 from obfuscapk.obfuscation import Obfuscation
@@ -25,7 +25,7 @@ class Reorder(obfuscator_category.ICodeObfuscator):
             "{0}.{1}".format(__name__, self.__class__.__name__)
         )
         super().__init__()
-
+        random.seed(5)
         self.if_mapping = {
             "if-eq": "if-ne",
             "if-ne": "if-eq",
@@ -159,6 +159,7 @@ class Reorder(obfuscator_category.ICodeObfuscator):
                             and " abstract " not in line
                             and " native " not in line
                             and not editing_method
+                            and random.random() > .5
                         ):
                             # If at the beginning of a non abstract/native method
                             out_file.write(line)
@@ -167,7 +168,7 @@ class Reorder(obfuscator_category.ICodeObfuscator):
                             code_blocks = []
                             current_code_block = None
 
-                        elif line.startswith(".end method") and editing_method:
+                        elif line.startswith(".end method") and editing_method and random.random() > .5:
                             # If a the end of the method.
                             editing_method = False
                             random.shuffle(code_blocks)
@@ -175,7 +176,7 @@ class Reorder(obfuscator_category.ICodeObfuscator):
                                 out_file.write(code_block.smali_code)
                             out_file.write(line)
 
-                        elif editing_method:
+                        elif editing_method and random.random() > .5:
                             # Inside method. Check if this line is marked with
                             # a special label.
                             if line.startswith("#!code_block!#"):

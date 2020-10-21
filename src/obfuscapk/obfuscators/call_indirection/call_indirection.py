@@ -4,10 +4,10 @@ import logging
 import re
 from io import StringIO
 from typing import List
-
+import random
 from obfuscapk import obfuscator_category
 from obfuscapk import util
-from obfuscapk.obfuscation import Obfuscation
+from obfuscapk.obfuscation import Obfuscations
 
 
 class CallIndirection(obfuscator_category.ICodeObfuscator):
@@ -16,7 +16,7 @@ class CallIndirection(obfuscator_category.ICodeObfuscator):
             "{0}.{1}".format(__name__, self.__class__.__name__)
         )
         super().__init__()
-
+        random.seed(5)
         self.is_adding_methods = True
 
         self.registers_pattern = re.compile(r"[vp]\d{1,3}")

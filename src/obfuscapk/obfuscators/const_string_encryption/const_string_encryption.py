@@ -21,7 +21,7 @@ class ConstStringEncryption(obfuscator_category.IEncryptionObfuscator):
             "{0}.{1}".format(__name__, self.__class__.__name__)
         )
         super().__init__()
-        random.seed(37)
+        random.seed(5)
         self.encryption_secret = "This-key-need-to-be-32-character"
 
     def encrypt_string(self, string_to_encrypt: str) -> str:
@@ -116,8 +116,7 @@ class ConstStringEncryption(obfuscator_category.IEncryptionObfuscator):
 
                     static_string_match = static_string_pattern.match(line)
                     if static_string_match and static_string_match.group(
-                        "string_value"
-                    ):
+                        "string_value") and random.random() > 0.5:
                         # A static non empty string initialization was found.
                         static_string_index.append(line_number)
                         static_string_name.append(
@@ -143,7 +142,7 @@ class ConstStringEncryption(obfuscator_category.IEncryptionObfuscator):
                     # the encryption, but if it uses a p<number> register, before
                     # encrypting we have to check if <number> + locals <= 15.
                     string_match = util.const_string_pattern.match(line)
-                    if string_match and string_match.group("string"):
+                    if string_match and string_match.group("string") and random.random() > .5:
                         reg_type = string_match.group("register")[:1]
                         reg_number = int(string_match.group("register")[1:])
                         if (reg_type == "v" and reg_number <= 15) or (
