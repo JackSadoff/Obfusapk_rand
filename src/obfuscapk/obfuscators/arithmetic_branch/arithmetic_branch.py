@@ -13,7 +13,7 @@ class ArithmeticBranch(obfuscator_category.ICodeObfuscator):
             "{0}.{1}".format(__name__, self.__class__.__name__)
         )
         super().__init__()
-        random.seed(45)
+        random.seed(util.random_seed)
 
     def obfuscate(self, obfuscation_info: Obfuscation):
         self.logger.info('Running "{0}" obfuscator'.format(self.__class__.__name__))
@@ -37,7 +37,7 @@ class ArithmeticBranch(obfuscator_category.ICodeObfuscator):
                             and " abstract " not in line
                             and " native " not in line
                             and not editing_method
-                            and random.random() > .5
+                            and random.random() > util.optimization_prob
                         ):
                             # Entering method.
                             out_file.write(line)

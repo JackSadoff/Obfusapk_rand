@@ -14,7 +14,7 @@ class MethodRename(obfuscator_category.IRenameObfuscator):
             "{0}.{1}".format(__name__, self.__class__.__name__)
         )
         super().__init__()
-        random.seed(5)
+        random.seed(util.random_seed)
     def rename_method(self, method_name: str) -> str:
         method_md5 = util.get_string_md5(method_name)
         return "m{0}".format(method_md5.lower()[:8])
@@ -90,7 +90,7 @@ class MethodRename(obfuscator_category.IRenameObfuscator):
         interactive: bool = False,
     ) -> Set[str]:
         renamed_methods: Set[str] = set()
-        
+
         # Search for method definitions that can be renamed.
         for smali_file in util.show_list_progress(
             smali_files,
@@ -142,7 +142,7 @@ class MethodRename(obfuscator_category.IRenameObfuscator):
                             method_param=method_match.group("method_param"),
                             method_return=method_match.group("method_return"),
                         )
-                        if method not in methods_to_ignore and random.random() > .5:
+                        if method not in methods_to_ignore and random.random() > util.optimization_prob:
                             # Rename method declaration (invocations of this method
                             # will be renamed later).
                             method_name = method_match.group("method_name")

@@ -7,7 +7,7 @@ from typing import List
 import random
 from obfuscapk import obfuscator_category
 from obfuscapk import util
-from obfuscapk.obfuscation import Obfuscations
+from obfuscapk.obfuscation import Obfuscation
 
 
 class CallIndirection(obfuscator_category.ICodeObfuscator):
@@ -16,7 +16,7 @@ class CallIndirection(obfuscator_category.ICodeObfuscator):
             "{0}.{1}".format(__name__, self.__class__.__name__)
         )
         super().__init__()
-        random.seed(5)
+        random.seed(util.random_seed)
         self.is_adding_methods = True
 
         self.registers_pattern = re.compile(r"[vp]\d{1,3}")
@@ -227,7 +227,7 @@ class CallIndirection(obfuscator_category.ICodeObfuscator):
             # There is a method limit for dex files.
             max_methods_to_add = obfuscation_info.get_remaining_methods_per_obfuscator()
 
-            if obfuscation_info.is_multidex():
+            if obfuscation_info.is_multidex() and random.random() > util.optimization_prob:
                 for index, dex_smali_files in enumerate(
                     util.show_list_progress(
                         obfuscation_info.get_multidex_smali_files(),
@@ -245,11 +245,12 @@ class CallIndirection(obfuscator_category.ICodeObfuscator):
                         obfuscation_info.interactive,
                     )
             else:
-                self.add_call_indirections(
-                    obfuscation_info.get_smali_files(),
-                    max_methods_to_add,
-                    obfuscation_info.interactive,
-                )
+                if random.random() > util.optimization_prob:
+                    self.add_call_indirections(
+                        obfuscation_info.get_smali_files(),
+                        max_methods_to_add,
+                        obfuscation_info.interactive,
+                    )
 
         except Exception as e:
             self.logger.error(

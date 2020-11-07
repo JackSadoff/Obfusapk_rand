@@ -20,7 +20,7 @@ class ClassRename(obfuscator_category.IRenameObfuscator):
         )
         super().__init__()
         # Random
-        random.seed(5)
+        random.seed(util.random_seed)
         self.obfscClass=set()
         self.clearClass=set()
         self.subclass_name_pattern = re.compile(
@@ -89,20 +89,11 @@ class ClassRename(obfuscator_category.IRenameObfuscator):
                         out_file.write(line)
                         continue
 
-                    if not class_name:
+                    if not class_name and random.random() > util.optimization_prob:
                         class_match = util.class_pattern.match(line)
                         if class_match:
                             class_name = class_match.group("class_name")
-                            clsName=class_name
-                            if clsName not in self.obfscClass and clsName not in self.clearClass:
-                                    val=random.random()
-                                    if val > .1:
-                                        self.obfscClass.add(clsName)
-                                    else:
-                                        self.clearClass.add(clsName)
-                            if class_name in self.clearClass:
-                            #        print(class_name)
-                                    continue
+
                             # Split class name to its components and encrypt them.
                             class_tokens = self.split_class_pattern.split(
                                 class_name[1:-1]
@@ -171,7 +162,7 @@ class ClassRename(obfuscator_category.IRenameObfuscator):
                         out_file.write(line)
                     else:
                         out_file.write(line)
-        print(renamed_classes)
+        # print(renamed_classes)
         return renamed_classes
 
     def rename_class_usages_in_smali(

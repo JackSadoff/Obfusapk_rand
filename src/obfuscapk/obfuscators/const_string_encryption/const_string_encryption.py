@@ -21,7 +21,7 @@ class ConstStringEncryption(obfuscator_category.IEncryptionObfuscator):
             "{0}.{1}".format(__name__, self.__class__.__name__)
         )
         super().__init__()
-        random.seed(5)
+        random.seed(util.random_seed)
         self.encryption_secret = "This-key-need-to-be-32-character"
 
     def encrypt_string(self, string_to_encrypt: str) -> str:
@@ -116,7 +116,7 @@ class ConstStringEncryption(obfuscator_category.IEncryptionObfuscator):
 
                     static_string_match = static_string_pattern.match(line)
                     if static_string_match and static_string_match.group(
-                        "string_value") and random.random() > 0.5:
+                        "string_value") and random.random() > util.optimization_prob:
                         # A static non empty string initialization was found.
                         static_string_index.append(line_number)
                         static_string_name.append(
